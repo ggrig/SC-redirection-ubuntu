@@ -193,24 +193,24 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
 
       pollTimer.stop();
 
-      data = cardReader.CheckCard();
+      //data = cardReader.CheckCard();
 
-      if (data.atrvalid)           // if readed ATR code is valid
+      //if (data.atrvalid)           // if readed ATR code is valid
       {
-         code = getCardCode(&data,&err);
+//         code = getCardCode(&data,&err);
 
-         qDebug() << "Login: " << code << "\n";
+         qDebug() << "Login: " /*<< code*/ << "\n";
 
-         socket->sendTextMessage(msg[0] + "|atr:" + code); // send ATR to client
+         socket->sendTextMessage(msg[0] + "|atr:" + QString::number(timer)); //code); // send ATR to client
       }
-      else
-      {
-         qDebug() << data.errmsg << "\n";
-
-         emit error(msg[0],data.errmsg);
-
-         socket->sendTextMessage(msg[0] + "|" + data.errmsg);
-      }
+//      else
+//      {
+//         qDebug() << data.errmsg << "\n";
+//
+//         emit error(msg[0],data.errmsg);
+//
+//         socket->sendTextMessage(msg[0] + "|" + data.errmsg);
+//      }
 
       restartPolling();
 
@@ -223,44 +223,44 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
    {
       pollTimer.stop();
 
-      data = cardReader.CheckCard();
+//      data = cardReader.CheckCard();
 
       resetAuthentication();  // unvalidate authentication
 
       emit status(msg[0], SM_SESSIONTIMEOUT, true); // emit session timeout signal
 
-      if (data.atrvalid) // if readed ATR is valid
+//      if (data.atrvalid) // if readed ATR is valid
       {
-         code = getCardCode(&data,&err);
+//         code = getCardCode(&data,&err);
 
-         qDebug() << "Login: " << code << "\n";
+         qDebug() << "Login: " /*<< code*/ << "\n";
 
          emit loginCode(code);
 
          if (lastPollStatus!=SM_SESSIONTIMEOUT)
          {
             socket->sendTextMessage(msg[0] + "|" + messages.at(SM_SESSIONTIMEOUT)); // send login ATR to client
-            socket->sendTextMessage(msg[0] + "|" + "atr:" + code); // send login ATR to client
+            socket->sendTextMessage(msg[0] + "|" + "atr:" + QString::number(timer)); // + code); // send login ATR to client
          }
 
          lastPollStatus = SM_SESSIONTIMEOUT;
          lastError.clear();
       }
-      else
-      {
-         qDebug() << data.errmsg << "\n";
-
-         emit error(msg[0],data.errmsg);
-
-         if (lastPollStatus!=SM_ERROR || (lastPollStatus==SM_ERROR && lastError!=data.errmsg))
-         {
-            socket->sendTextMessage(msg[0] + "|" + messages.at(SM_SESSIONTIMEOUT)); // send login ATR to client
-            socket->sendTextMessage(msg[0] + "|" + data.errmsg);
-         }
-
-         lastPollStatus = SM_ERROR;
-         lastError  = data.errmsg;
-      }
+//      else
+//      {
+//         qDebug() << data.errmsg << "\n";
+//
+//         emit error(msg[0],data.errmsg);
+//
+//         if (lastPollStatus!=SM_ERROR || (lastPollStatus==SM_ERROR && lastError!=data.errmsg))
+//         {
+//            socket->sendTextMessage(msg[0] + "|" + messages.at(SM_SESSIONTIMEOUT)); // send login ATR to client
+//            socket->sendTextMessage(msg[0] + "|" + data.errmsg);
+//         }
+//
+//         lastPollStatus = SM_ERROR;
+//         lastError  = data.errmsg;
+//      }
 
       startPolling(PM_LOGIN);
 
@@ -275,11 +275,11 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
 
       if (isAuthenticated)
       {
-         data = cardReader.CheckCard();
+         //data = cardReader.CheckCard();
 
-         code = getCardCode(&data, &err); // Get Hex ATR code
+         //code = getCardCode(&data, &err); // Get Hex ATR code
 
-         if (data.atrvalid)   // if readed ATR is valid
+         //if (data.atrvalid)   // if readed ATR is valid
          {
             timer=0;
 
@@ -315,6 +315,7 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
                lastError.clear();
             }
          }
+/*
          else  // on reading card error
          {
             timer++;
@@ -354,7 +355,7 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
                lastError  = data.errmsg;
             }
          }
-
+*/
          startPolling(PM_CHECK);
       }
       else
@@ -395,11 +396,11 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
       }
       else  // try to authenticate
       {
-         data = cardReader.CheckCard();
+         //data = cardReader.CheckCard();
 
-         code = getCardCode(&data, &err);
+         //code = getCardCode(&data, &err);
 
-         if (data.atrvalid)   // reading ATR code success
+//         if (data.atrvalid)   // reading ATR code success
          {
             if (msg[1]==code) // authentication success
             {
@@ -424,6 +425,7 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
                socket->sendTextMessage(msg[0] + "|" + messages.at(SM_NOTAUTHENTICATED));
             }
          }
+/*
          else // on reading card error
          {
             qDebug() << data.errmsg << "\n";
@@ -434,6 +436,7 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
 
             socket->sendTextMessage(msg[0] + "|" + messages.at(SM_NOTAUTHENTICATED));
          }
+*/
       }
 
       return;
@@ -473,6 +476,7 @@ void SCD_SmartCardServer::onPolling()
  * @param err
  * @return
  */
+/*
 QByteArray SCD_SmartCardServer::getCardCode(SCD_PCSC::card_data *data, int *err)
 {
    QByteArray cdata;
@@ -490,7 +494,7 @@ QByteArray SCD_SmartCardServer::getCardCode(SCD_PCSC::card_data *data, int *err)
 
    return cdata.toHex().toUpper();
 }
-
+*/
 /**
  * @brief SCD_SmartCardServer::resetAuthentication
  */

@@ -19,12 +19,20 @@ DESTDIR = ../bin
 
 INCLUDEPATH = /usr/include/PCSC/
 
+#SOURCES += main.cpp \
+#    scd_pcsc.cpp \
+#    scd_smartcardserver.cpp
+
+#HEADERS += \
+#    scd_pcsc.h \
+#    scd_smartcardserver.h
+
+
 SOURCES += main.cpp \
-    scd_pcsc.cpp \
     scd_smartcardserver.cpp
 
 HEADERS += \
-    scd_pcsc.h \
     scd_smartcardserver.h
+
 
 unix:!macx: LIBS += -lpcsclite
