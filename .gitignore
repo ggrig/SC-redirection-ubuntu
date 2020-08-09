@@ -1,0 +1,4 @@
+bin/scd_smcauthserver
+build*/*
+source/scd_smcauthserver.pro.user
+source/*.autosave
