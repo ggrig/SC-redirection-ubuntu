@@ -112,9 +112,9 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
 {
    QByteArray code;
 
-   int err;
+   //int err;
 
-   qDebug() << "Message Received: " << message << "\n";
+   qDebug() << QString::number(timer++) << " Message Received: " << message <<"\n";
 
    QStringList msg=message.toUpper().split(":");
 
