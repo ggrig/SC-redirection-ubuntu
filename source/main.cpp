@@ -17,9 +17,9 @@ int main(int argc, char *argv[])
 {
    QCoreApplication a(argc, argv);
 
-   echo "SC-Develop Smart Card Web Socket Server v1.0\n";
-   echo "Copyright (c) 2019 (MIT) Ing. Salvatore Cerami - dev.salvatore.cerami@gmail.com\n";
-   echo "https://github.com/sc-develop - git.sc.develop@gmail.com\n\n";
+   //echo "SC-Develop Smart Card Web Socket Server v1.0\n";
+   //echo "Copyright (c) 2019 (MIT) Ing. Salvatore Cerami - dev.salvatore.cerami@gmail.com\n";
+   //echo "https://github.com/sc-develop - git.sc.develop@gmail.com\n\n";
 
    QSettings config(QCoreApplication::applicationDirPath() + "/config.cfg",QSettings::IniFormat);
 

@@ -114,17 +114,22 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
 
    //int err;
 
-   qDebug() << QString::number(timer++) << " Message Received: " << message <<"\n";
-
    QStringList msg=message.toUpper().split(":");
+
+   if (msg[0]!=commands.at(C_LOGIN))
+   {
+       qDebug() << QString::number(timer++) << " Message Received: " << message <<"\n";
+   }
 
    if (msg.count()!=2)
    {
-      qDebug() << messages.at(SM_UNKNOWNCOMMAND) << "\n";
+      //qDebug() << messages.at(SM_UNKNOWNCOMMAND) << "\n";
 
-      emit error(msg[0],messages.at(SM_UNKNOWNCOMMAND));
+      //emit error(msg[0],messages.at(SM_UNKNOWNCOMMAND));
 
-      socket->close(); // close suspect connection
+      //socket->close(); // close suspect connection
+
+      //restartPolling();
 
       return;
    }
@@ -142,7 +147,7 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
          pollTimer.setInterval(msec);
          socket->sendTextMessage(msg[0] + "|Timeout: " + msg[1].trimmed());  // reply to client
 
-         restartPolling();
+         //restartPolling();
       }
       else
       {
@@ -180,39 +185,7 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
          socket->sendTextMessage(msg[0] + "|ERROR:" + messages.at(SM_UNKNOWN));
       }
 
-      restartPolling();
-
-      return;
-   }
-
-   // Read the ATR code (for diagnostic use, or code detection)
-
-   if (msg[0]==commands.at(C_ATR))
-   {
-      //stopPolling();
-
-      pollTimer.stop();
-
-      //data = cardReader.CheckCard();
-
-      //if (data.atrvalid)           // if readed ATR code is valid
-      {
-//         code = getCardCode(&data,&err);
-
-         qDebug() << "Login: " /*<< code*/ << "\n";
-
-         socket->sendTextMessage(msg[0] + "|atr:" + QString::number(timer)); //code); // send ATR to client
-      }
-//      else
-//      {
-//         qDebug() << data.errmsg << "\n";
-//
-//         emit error(msg[0],data.errmsg);
-//
-//         socket->sendTextMessage(msg[0] + "|" + data.errmsg);
-//      }
-
-      restartPolling();
+      //restartPolling();
 
       return;
    }
@@ -223,8 +196,6 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
    {
       pollTimer.stop();
 
-//      data = cardReader.CheckCard();
-
       resetAuthentication();  // unvalidate authentication
 
       emit status(msg[0], SM_SESSIONTIMEOUT, true); // emit session timeout signal
@@ -233,7 +204,7 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
       {
 //         code = getCardCode(&data,&err);
 
-         qDebug() << "Login: " /*<< code*/ << "\n";
+         //qDebug() << "Login: " /*<< code*/ << "\n";
 
          emit loginCode(code);
 
@@ -262,7 +233,7 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
 //         lastError  = data.errmsg;
 //      }
 
-      startPolling(PM_LOGIN);
+      //startPolling(PM_LOGIN);
 
       return;
    }
@@ -384,7 +355,7 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
 
    if (msg[0]==commands.at(C_AUTH))
    {
-      stopPolling();
+      //stopPolling();
 
       if (isAuthenticated)
       {
@@ -442,11 +413,11 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
       return;
    }
 
-   qDebug() << messages.at(SM_UNKNOWNCOMMAND) << "\n";
+   //qDebug() << messages.at(SM_UNKNOWNCOMMAND) << "\n";
 
-   emit error(msg[0],messages.at(SM_UNKNOWNCOMMAND));
+   //emit error(msg[0],messages.at(SM_UNKNOWNCOMMAND));
 
-   socket->close(); // close suspect connection
+   //socket->close(); // close suspect connection
 }
 
 /**
