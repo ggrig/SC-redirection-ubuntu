@@ -21,15 +21,11 @@ class SCD_SmartCardServer : public QObject
 
      enum Commands {C_SERVERTYPE, C_ATR, C_LOGIN, C_CHECK, C_AUTH, C_TIMEOUT};
 
-     enum PollingMode {PM_NONE, PM_LOGIN, PM_CHECK};
-
      QStringList messages;
      QStringList commands;
      QString lastCardError;
 
      StatusMess  lastPollStatus = SM_UNKNOWN;
-     PollingMode pollMode       = PM_NONE;
-     PollingMode currentPollMode;
 
      ServerType type;
 
@@ -49,12 +45,6 @@ class SCD_SmartCardServer : public QObject
      QTimer pollTimer;
 
      void resetAuthentication();
-
-     void startPolling(PollingMode mode);
-
-     void restartPolling();
-
-     void stopPolling();
 
      void messageParse(QWebSocket *socket, const QString &message);
 
@@ -78,7 +68,6 @@ class SCD_SmartCardServer : public QObject
 
      void onCheckCardMessageReceived(const QString &message);    
 
-     void onPolling();
 };
 
 #endif // SCD_SMARTCARDSERVER_H

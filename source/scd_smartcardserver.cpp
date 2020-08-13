@@ -26,9 +26,6 @@ SCD_SmartCardServer::SCD_SmartCardServer(qint16 port, ServerType type, QObject *
    commands.insert(C_AUTH,       "AUTHCODE");
    commands.insert(C_TIMEOUT,    "POLLTIMEOUT");
 
-   connect(&pollTimer,SIGNAL(timeout()),this,SLOT(onPolling()));
-
-   pollTimer.setInterval(1500);
 }
 
 /**
@@ -82,7 +79,6 @@ void SCD_SmartCardServer::onConnect()
    lastCardError.clear();
 
    lastPollStatus = SM_UNKNOWN;
-   pollMode   = PM_NONE;
 }
 
 /**
@@ -92,11 +88,6 @@ void SCD_SmartCardServer::onConnect()
 void SCD_SmartCardServer::onCheckCardMessageReceived(const QString &message)
 {
    QWebSocket *socket = static_cast<QWebSocket *>(sender());
-
-   currentPollMode = pollMode;
-
-   pollMode       = PM_NONE;
-   lastPollStatus = SM_UNKNOWN;
 
    lastCardError.clear();
 
@@ -158,41 +149,10 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
 }
 
 /**
- * @brief SCD_SmartCardServer::onPolling
- */
-void SCD_SmartCardServer::onPolling()
-{
-}
-
-/**
  * @brief SCD_SmartCardServer::resetAuthentication
  */
 void SCD_SmartCardServer::resetAuthentication()
 {
    isAuthenticated = 0;
    atr = "";
-}
-
-/**
- * @brief SCD_SmartCardServer::startPolling
- * @param mode
- */
-void SCD_SmartCardServer::startPolling(SCD_SmartCardServer::PollingMode mode)
-{
-}
-
-/**
- * Restart paused current polling
- *
- * @brief SCD_SmartCardServer::restartPolling
- */
-void SCD_SmartCardServer::restartPolling()
-{
-}
-
-/**
- * @brief SCD_SmartCardServer::stopPolling
- */
-void SCD_SmartCardServer::stopPolling()
-{
 }
