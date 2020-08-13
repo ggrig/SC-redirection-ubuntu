@@ -114,6 +114,13 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
 
    qDebug() << QString::number(timer++) << " Message Received: " << message <<"\n";
 
+   socket->sendTextMessage("Ubuntu|Message Received");
+
+   if (msg.count()!=2)
+   {
+      return;
+   }
+
    // Require to change polling tmeout interval -------------------------------------------
 
    if (msg[0]==commands.at(C_TIMEOUT))
@@ -155,20 +162,6 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
  */
 void SCD_SmartCardServer::onPolling()
 {
-   switch (pollMode)
-   {
-      case PM_LOGIN:
-        messageParse(socket,commands[C_LOGIN] + ":");
-      break;
-
-      case PM_CHECK:
-        messageParse(socket,commands[C_CHECK] + ":");
-      break;
-
-      default:
-        stopPolling();
-      break;
-   }
 }
 
 /**
@@ -186,20 +179,6 @@ void SCD_SmartCardServer::resetAuthentication()
  */
 void SCD_SmartCardServer::startPolling(SCD_SmartCardServer::PollingMode mode)
 {
-   if (mode!=PM_NONE)
-   {
-      pollMode  = mode;
-      pollTimer.setSingleShot(true);
-
-      if (pollTimer.interval()>0)
-      {
-         pollTimer.start();
-      }
-      else
-      {
-         pollTimer.stop();
-      }
-   }
 }
 
 /**
@@ -209,7 +188,6 @@ void SCD_SmartCardServer::startPolling(SCD_SmartCardServer::PollingMode mode)
  */
 void SCD_SmartCardServer::restartPolling()
 {
-  startPolling(currentPollMode);
 }
 
 /**
@@ -217,8 +195,4 @@ void SCD_SmartCardServer::restartPolling()
  */
 void SCD_SmartCardServer::stopPolling()
 {
-   pollTimer.stop();    // stop polling
-   lastPollStatus = SM_UNKNOWN;
-   pollMode = PM_NONE;   
-   lastCardError.clear();
 }
