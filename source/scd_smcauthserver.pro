@@ -17,16 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 DESTDIR = ../bin
 
-INCLUDEPATH = /usr/include/PCSC/
-
-#SOURCES += main.cpp \
-#    scd_pcsc.cpp \
-#    scd_smartcardserver.cpp
-
-#HEADERS += \
-#    scd_pcsc.h \
-#    scd_smartcardserver.h
-
+INCLUDEPATH = .
 
 SOURCES += main.cpp \
     scd_smartcardserver.cpp

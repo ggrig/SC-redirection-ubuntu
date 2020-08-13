@@ -6,8 +6,6 @@
 #include <QWebSocket>
 #include <QTimer>
 
-//#include <scd_pcsc.h>
-
 class SCD_SmartCardServer : public QObject
 {
    Q_OBJECT
@@ -38,9 +36,6 @@ class SCD_SmartCardServer : public QObject
      QWebSocketServer *cardServer;
      QWebSocket *socket;
 
-     //SCD_PCSC cardReader;
-     //SCD_PCSC::card_data data;
-
      QString lastError;
      QString atr = "";
 
@@ -52,8 +47,6 @@ class SCD_SmartCardServer : public QObject
      bool permanentConnection;
 
      QTimer pollTimer;
-
-     //QByteArray getCardCode(SCD_PCSC::card_data *data, int *err);
 
      void resetAuthentication();
 

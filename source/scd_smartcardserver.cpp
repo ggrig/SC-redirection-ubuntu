@@ -442,31 +442,6 @@ void SCD_SmartCardServer::onPolling()
 }
 
 /**
- * @brief SCD_SmartCardServer::getCardCode
- * @param data
- * @param err
- * @return
- */
-/*
-QByteArray SCD_SmartCardServer::getCardCode(SCD_PCSC::card_data *data, int *err)
-{
-   QByteArray cdata;
-
-   *err = data->error;
-
-   if (data->error)
-   {
-      cdata = data->errmsg;
-
-      return cdata;
-   }
-
-   cdata = QByteArray::fromRawData((char *)data->data, data->datalen);
-
-   return cdata.toHex().toUpper();
-}
-*/
-/**
  * @brief SCD_SmartCardServer::resetAuthentication
  */
 void SCD_SmartCardServer::resetAuthentication()
