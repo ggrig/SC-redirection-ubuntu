@@ -24,6 +24,7 @@ SCD_SmartCardServer::SCD_SmartCardServer(qint16 port, ServerType type, QObject *
    commands.insert(C_LOGIN,      "LOGINCODE");
    commands.insert(C_CERT,       "VIEWCERT");
    commands.insert(C_AUTH,       "AUTHENTICATE");
+   commands.insert(C_SIGNED,     "SIGNED");
    commands.insert(C_TIMEOUT,    "POLLTIMEOUT");
 
 }
@@ -101,11 +102,11 @@ void SCD_SmartCardServer::onCheckCardMessageReceived(const QString &message)
  */
 void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &message)
 {
-   QStringList msg=message.toUpper().split(":");
+   QStringList msg=message.split(":");
 
    qDebug() << QString::number(timer++) << " Message Received: " << message <<"\n";
 
-   socket->sendTextMessage("Ubuntu|Message Received");
+   //socket->sendTextMessage("Ubuntu|Message Received");
 
    if (msg.count()!=2)
    {
@@ -141,13 +142,20 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
       return;
    }
 
-   // Require to authenticate ATR code --------------------------------------------------
-
    if (msg[0]==commands.at(C_AUTH))
    {
-       qDebug() << QString::number(timer++) << " C_AUTH Received: " <<"\n";
-      return;
+       qDebug() << QString::number(timer++) << " Authentication Request: " <<"\n";
+       QString msgToSign = "Message to sign";
+       socket->sendTextMessage("\{\"__MESSAGE__\":\"CMD|TOSIGN:" + msgToSign + "\"\}"); // send message to be signed
+       return;
    }
+
+   if (msg[0]==commands.at(C_SIGNED))
+   {
+       qDebug() << QString::number(timer++) << " To Verify: " << msg[1] << "\n";
+       return;
+   }
+
 }
 
 /**

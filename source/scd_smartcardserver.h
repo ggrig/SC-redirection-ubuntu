@@ -19,7 +19,7 @@ class SCD_SmartCardServer : public QObject
                       SM_UNKNOWNCOMMAND, SM_INTEGRATED      ,SM_STANDALONE,
                       SM_UNKNOWN,SM_ERROR};
 
-     enum Commands {C_SERVERTYPE, C_ATR, C_LOGIN, C_CERT, C_AUTH, C_TIMEOUT};
+     enum Commands {C_SERVERTYPE, C_ATR, C_LOGIN, C_CERT, C_AUTH, C_SIGNED, C_TIMEOUT};
 
      QStringList messages;
      QStringList commands;
