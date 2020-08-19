@@ -8,15 +8,6 @@
 
 SCD_SmartCardServer::SCD_SmartCardServer(qint16 port, ServerType type, QObject *parent) : QObject(parent), type(type), port(port)
 {
-   messages.insert(SM_AUTHENTICATED   , "Authenticated");
-   messages.insert(SM_NOTAUTHENTICATED, "NotAuthenticated");
-   messages.insert(SM_VALIDATED,        "Validated");
-   messages.insert(SM_NOTVALIDATED,     "NotValidated");
-   messages.insert(SM_ALREADYAUTH,      "AlreadyAuthenticated");
-   messages.insert(SM_SESSIONTIMEOUT,   "SessionExpired");
-   messages.insert(SM_UNKNOWNCOMMAND,   "UnknownCommand");
-   messages.insert(SM_INTEGRATED,       "Integrated");
-   messages.insert(SM_STANDALONE,       "Standalone");
    messages.insert(SM_UNKNOWN,          "Unknown");
 
    commands.insert(C_SERVERTYPE, "SERVERTYPE");
@@ -153,6 +144,9 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
    if (msg[0]==commands.at(C_SIGNED))
    {
        qDebug() << QString::number(timer++) << " To Verify: " << msg[1] << "\n";
+
+       system("openssl x509 -pubkey -noout -in mysite.local.cer  > pubkey.pem");
+       system("openssl dgst -verify pubkey.pem -keyform PEM -sha256 -signature sig.bin -binary msg");
        return;
    }
 

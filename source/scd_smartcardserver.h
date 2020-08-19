@@ -14,10 +14,7 @@ class SCD_SmartCardServer : public QObject
 
      enum ServerType {ST_UNKNOWN, ST_STANDALONE, ST_INTEGRATED};
 
-     enum StatusMess {SM_AUTHENTICATED , SM_NOTAUTHENTICATED,SM_VALIDATED,
-                      SM_NOTVALIDATED  , SM_ALREADYAUTH     ,SM_SESSIONTIMEOUT,
-                      SM_UNKNOWNCOMMAND, SM_INTEGRATED      ,SM_STANDALONE,
-                      SM_UNKNOWN,SM_ERROR};
+     enum StatusMess {SM_UNKNOWN,SM_ERROR};
 
      enum Commands {C_SERVERTYPE, C_ATR, C_LOGIN, C_CERT, C_AUTH, C_SIGNED, C_TIMEOUT};
 
