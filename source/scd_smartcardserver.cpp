@@ -22,8 +22,8 @@ SCD_SmartCardServer::SCD_SmartCardServer(qint16 port, ServerType type, QObject *
    commands.insert(C_SERVERTYPE, "SERVERTYPE");
    commands.insert(C_ATR,        "ATRCODE");
    commands.insert(C_LOGIN,      "LOGINCODE");
-   commands.insert(C_CHECK,      "CHECKCODE");
-   commands.insert(C_AUTH,       "AUTHCODE");
+   commands.insert(C_CERT,       "VIEWCERT");
+   commands.insert(C_AUTH,       "AUTHENTICATE");
    commands.insert(C_TIMEOUT,    "POLLTIMEOUT");
 
 }
@@ -135,8 +135,9 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
 
    // Authentication check ----------------------------------------------------------------
 
-   if (msg[0]==commands.at(C_CHECK))
+   if (msg[0]==commands.at(C_CERT))
    {
+      qDebug() << QString::number(timer++) << " C_CERT Received: " <<"\n";
       return;
    }
 
@@ -144,6 +145,7 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
 
    if (msg[0]==commands.at(C_AUTH))
    {
+       qDebug() << QString::number(timer++) << " C_AUTH Received: " <<"\n";
       return;
    }
 }
