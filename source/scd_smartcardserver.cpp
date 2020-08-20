@@ -1,5 +1,14 @@
 #include "scd_smartcardserver.h"
 
+void saveToFile(QString qStr, QString qPath)
+{
+    QFile qFile(qPath);
+    if (qFile.open(QIODevice::WriteOnly)) {
+      QTextStream out(&qFile); out << qStr;
+      qFile.close();
+    }
+}
+
 /**
  * @brief SCD_SmartCardServer::SCD_SmartCardServer
  * @param port
@@ -95,14 +104,19 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
 {
    QStringList msg=message.split(":");
 
-   qDebug() << QString::number(timer++) << " Message Received: " << message <<"\n";
-
-   //socket->sendTextMessage("Ubuntu|Message Received");
-
    if (msg.count()!=2)
    {
-      return;
+       qDebug() << QString::number(timer++) << " Wrongly formatted: " << message <<"\n";
+       return;
    }
+
+   int pos = msg[1].lastIndexOf(QChar('\"'));
+   msg[1] = msg[1].left(pos);
+
+   qDebug() << QString::number(timer++) << " Message Received: ";
+   qDebug() << " Command: " << msg[0];
+   qDebug() << " Data: " << msg[1] <<"\n";
+
 
    // Require to change polling tmeout interval -------------------------------------------
 
@@ -129,24 +143,37 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
 
    if (msg[0]==commands.at(C_CERT))
    {
-      qDebug() << QString::number(timer++) << " C_CERT Received: " <<"\n";
+      QString certificate = msg[1];
+      QString qPath("cert_sc.cer");
+      saveToFile(certificate, qPath);
+
       return;
    }
 
    if (msg[0]==commands.at(C_AUTH))
    {
-       qDebug() << QString::number(timer++) << " Authentication Request: " <<"\n";
-       QString msgToSign = "Message to sign";
-       socket->sendTextMessage("\{\"__MESSAGE__\":\"CMD|TOSIGN:" + msgToSign + "\"\}"); // send message to be signed
+       QString certificate = msg[1];
+       QString qPath("cert.cer");
+       saveToFile(certificate, qPath);
+
+       QString msgToSign = "CryptoAPI is a good way to handle security";
+       qPath = "toSign.txt";
+       saveToFile(msgToSign, qPath);
+       socket->sendTextMessage("{\"__MESSAGE__\":\"CMD|TOSIGN:" + msgToSign + "\"}"); // send message to be signed
        return;
    }
 
    if (msg[0]==commands.at(C_SIGNED))
    {
-       qDebug() << QString::number(timer++) << " To Verify: " << msg[1] << "\n";
+       QString sig64 = msg[1];
+       sig64 = sig64.replace("\\r\\n","\r\n");
+       sig64 = sig64.replace("\\n","\r\n");
+       QString qPath("sig64");
+       saveToFile(sig64, qPath);
 
+       system("openssl base64 -d -in sig64 -out sig256");
        system("openssl x509 -pubkey -noout -in mysite.local.cer  > pubkey.pem");
-       system("openssl dgst -verify pubkey.pem -keyform PEM -sha256 -signature sig.bin -binary msg");
+       system("openssl dgst -verify pubkey.pem -keyform PEM -sha256 -signature sig256 -binary toSign.txt");
        return;
    }
 

@@ -5,6 +5,7 @@
 #include <QWebSocketServer>
 #include <QWebSocket>
 #include <QTimer>
+#include <QFile>
 
 class SCD_SmartCardServer : public QObject
 {
