@@ -144,8 +144,12 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
    if (msg[0]==commands.at(C_CERT))
    {
       QString certificate = msg[1];
+      certificate = certificate.replace("\\r\\n","\r\n");
+      certificate = certificate.replace("\\n","\r\n");
       QString qPath("cert_sc.cer");
       saveToFile(certificate, qPath);
+
+      system("openssl x509 -in cert_sc.cer -noout -text");
 
       return;
    }
@@ -153,8 +157,12 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
    if (msg[0]==commands.at(C_AUTH))
    {
        QString certificate = msg[1];
+       certificate = certificate.replace("\\r\\n","\r\n");
+       certificate = certificate.replace("\\n","\r\n");
        QString qPath("cert.cer");
        saveToFile(certificate, qPath);
+
+       system("openssl x509 -in cert.cer -noout -text");
 
        QString msgToSign = "CryptoAPI is a good way to handle security";
        qPath = "toSign.txt";
@@ -172,7 +180,7 @@ void SCD_SmartCardServer::messageParse(QWebSocket *socket, const QString &messag
        saveToFile(sig64, qPath);
 
        system("openssl base64 -d -in sig64 -out sig256");
-       system("openssl x509 -pubkey -noout -in mysite.local.cer  > pubkey.pem");
+       system("openssl x509 -pubkey -noout -in cert.cer  > pubkey.pem");
        system("openssl dgst -verify pubkey.pem -keyform PEM -sha256 -signature sig256 -binary toSign.txt");
        return;
    }
