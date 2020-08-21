@@ -13,14 +13,15 @@ In the test setup add the following line to the 'hosts' file on the Windows mach
 
 <code>
 ip_address         sc_server.com
-</code>
-<br/>
-\<ip_address\> here is the Ubuntu PC/VM static IP
+</code> <br/> <br/>
+"ip_address" here is the Ubuntu PC/VM static IP
 
 ## Cryptography
 The project utilizes OpenSSL for all cryptographic operations. It is supposed to be installed on Ubuntu 18.04 by default. Check it by running the following command on the terminal
 
 <code>
-~$ openssl version <br/>
+~$ openssl version
+</code>
+<code>
 OpenSSL 1.1.1  11 Sep 2018
 </code>
