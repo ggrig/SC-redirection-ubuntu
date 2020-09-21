@@ -1,5 +1,22 @@
 # Smart Card Redirection Ubuntu 18.04 WebSocket Server
 
+## Prerequisites
+
+- Install USB/IP client on Ubuntu 18.04
+
+```
+sudo apt-get remove --purge usbip* libusbip*
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install linux-tools-5.4.0-42-generic -y
+```
+The `usbip` binary will be placed in `/usr/lib/linux-tools/5.4.0-42-generic/` directory
+
+For manual configuration of the client see:
+https://developer.ridgerun.com/wiki/index.php?title=How_to_setup_and_use_USB/IP
+
+## The Code
+
 The project is based on https://github.com/SC-Develop/SCD_SMCAuthServer
 
 ## The Project Compilation
