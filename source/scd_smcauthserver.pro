@@ -20,10 +20,12 @@ DESTDIR = ../bin
 INCLUDEPATH = .
 
 SOURCES += main.cpp \
-    scd_smartcardserver.cpp
+    scd_smartcardserver.cpp \
+    tcptunnel.cpp
 
 HEADERS += \
-    scd_smartcardserver.h
+    scd_smartcardserver.h \
+    tcptunnel.h
 
 
 unix:!macx: LIBS += -lpcsclite

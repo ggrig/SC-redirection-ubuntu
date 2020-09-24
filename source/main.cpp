@@ -38,3 +38,43 @@ int main(int argc, char *argv[])
 
    return 0;
 }
+
+#ifdef TCP_TUNNEL_STANDALONE
+int main(int argc, char *argv[])
+{
+#ifdef __MINGW32__
+    WSADATA info;
+    if (WSAStartup(MAKEWORD(1,1), &info) != 0)
+    {
+        perror("main: WSAStartup()");
+        exit(1);
+    }
+#endif
+
+    name = argv[0];
+
+    set_options(argc, argv);
+
+    if (build_server() == 1)
+    {
+        exit(1);
+    }
+
+#ifndef __MINGW32__
+    signal(SIGCHLD, SIG_IGN);
+#endif
+
+    do
+    {
+        if (wait_for_clients() == 0)
+        {
+            handle_client();
+        }
+    }
+    while (settings.stay_alive);
+
+    close(rc.server_socket);
+
+    return 0;
+}
+#endif
