@@ -4,12 +4,11 @@
 void TCPTunnelWorker::process() { // Process. Start processing data.
     // allocate resources using new here
 
-#ifdef TCP_TUNNEL_STANDALONE
-// ./tcptunnel --local-port=3240 --remote-port=3240 --remote-host=192.168.1.7 --log --stay-alive
-
-    name = argv[0];
-
-    set_options(argc, argv);
+    set_option(LOCAL_PORT_OPTION, "3240");
+    set_option(REMOTE_PORT_OPTION, "23240");
+    set_option(REMOTE_HOST_OPTION, "192.168.1.7");
+    set_option(STAY_ALIVE_OPTION, "");
+    set_option(LOG_OPTION, "");
 
     if (build_server() == 1)
     {
@@ -23,11 +22,10 @@ void TCPTunnelWorker::process() { // Process. Start processing data.
             handle_client();
         }
     }
-    while (settings.stay_alive);
+    while (stay_alive());
 
-    close(rc.server_socket);
-#endif
+    //close(rc.server_socket);
 
-    qDebug("Hello World!");
+    //qDebug("Hello World!");
     emit finished();
 }

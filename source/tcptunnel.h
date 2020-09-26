@@ -55,6 +55,8 @@ void print_usage(void);
 void print_version(void);
 void print_missing(const char *message);
 
+bool stay_alive();
+
 struct struct_settings {
 	unsigned int local_port     : 1;
 	unsigned int remote_host    : 1;
