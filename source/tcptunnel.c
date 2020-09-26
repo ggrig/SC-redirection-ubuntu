@@ -28,10 +28,10 @@ struct struct_settings settings = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 int stay_alive()
 {
-    return (settings.stay_alive);
+	return settings.stay_alive;
 }
 
-#if 0
+#ifdef TCP_TUNNEL_STANDALONE
 static struct option long_options[] = {
 	{ "local-port",    required_argument, NULL, LOCAL_PORT_OPTION },
 	{ "remote-host",   required_argument, NULL, REMOTE_HOST_OPTION },
@@ -49,6 +49,43 @@ static struct option long_options[] = {
 	{ 0, 0, 0, 0 }
 };
 
+int main(int argc, char *argv[])
+{
+#ifdef __MINGW32__
+	WSADATA info;
+	if (WSAStartup(MAKEWORD(1,1), &info) != 0)
+	{
+		perror("main: WSAStartup()");
+		exit(1);
+	}
+#endif
+
+	name = argv[0];
+
+	set_options(argc, argv);
+
+	if (build_server() == 1)
+	{
+		exit(1);
+	}
+
+#ifndef __MINGW32__
+	signal(SIGCHLD, SIG_IGN);
+#endif
+
+	do
+	{
+		if (wait_for_clients() == 0)
+		{
+			handle_client();
+		}
+	}
+	while (settings.stay_alive);
+
+	close(rc.server_socket);
+
+	return 0;
+}
 
 void set_options(int argc, char *argv[])
 {
@@ -166,71 +203,77 @@ void set_options(int argc, char *argv[])
 }
 #endif
 
-void set_option(char opt, const char *optarg)
+void set_option(char option, const char *optarg)
 {
-    switch (opt)
-    {
-        case LOCAL_PORT_OPTION:
-        {
-            options.local_port = optarg;
-            settings.local_port = 1;
-            break;
-        }
+#ifndef __MINGW32__
+	options.buffer_size = 4096;
+#endif
 
-        case REMOTE_PORT_OPTION:
-        {
-            options.remote_port = optarg;
-            settings.remote_port = 1;
-            break;
-        }
+	switch (option)
+	{
+		case LOCAL_PORT_OPTION:
+		{
+			options.local_port = optarg;
+			settings.local_port = 1;
+			break;
+		}
 
-        case REMOTE_HOST_OPTION:
-        {
-            options.remote_host = optarg;
-            settings.remote_host = 1;
-            break;
-        }
+		case REMOTE_PORT_OPTION:
+		{
+			options.remote_port = optarg;
+			settings.remote_port = 1;
+			break;
+		}
 
-        case BIND_ADDRESS_OPTION:
-        {
-            options.bind_address = optarg;
-            settings.bind_address = 1;
-            break;
-        }
+		case REMOTE_HOST_OPTION:
+		{
+			options.remote_host = optarg;
+			settings.remote_host = 1;
+			break;
+		}
 
-        case BUFFER_SIZE_OPTION:
-        {
-            options.buffer_size = atoi(optarg);
-            settings.buffer_size = 1;
-            break;
-        }
+		case BIND_ADDRESS_OPTION:
+		{
+			options.bind_address = optarg;
+			settings.bind_address = 1;
+			break;
+		}
 
-        case CLIENT_ADDRESS_OPTION:
-        {
-            options.client_address = optarg;
-            settings.client_address = 1;
-            break;
-        }
+#ifndef __MINGW32__
+		case BUFFER_SIZE_OPTION:
+		{
+			options.buffer_size = atoi(optarg);
+			settings.buffer_size = 1;
+			break;
+		}
+#endif
 
-        case FORK_OPTION:
-        {
-            settings.fork = 1;
-            settings.stay_alive = 1;
-            break;
-        }
+		case CLIENT_ADDRESS_OPTION:
+		{
+			options.client_address = optarg;
+			settings.client_address = 1;
+			break;
+		}
 
-        case LOG_OPTION:
-        {
-            settings.log = 1;
-            break;
-        }
+		case FORK_OPTION:
+		{
+			settings.fork = 1;
+			settings.stay_alive = 1;
+			break;
+		}
 
-        case STAY_ALIVE_OPTION:
-        {
-            settings.stay_alive = 1;
-            break;
-        }
-    }
+		case LOG_OPTION:
+		{
+			settings.log = 1;
+			break;
+		}
+
+		case STAY_ALIVE_OPTION:
+		{
+			settings.stay_alive = 1;
+			break;
+		}
+	}
 }
 
 int build_server(void)
@@ -305,7 +348,11 @@ int wait_for_clients(void)
 		{
 			printf("> %s tcptunnel: refused request from %s\n", get_current_timestamp(), inet_ntoa(rc.client_addr.sin_addr));
 		}
+#ifdef __MINGW32__
+		closesocket(rc.client_socket);
+#else
 		close(rc.client_socket);
+#endif
 		return 1;
 	}
 
@@ -383,7 +430,11 @@ int build_tunnel(void)
 int use_tunnel(void)
 {
 	fd_set io;
+#ifdef __MINGW32__
+	char buffer[OPTIONS_BUFFER_SIZE];
+#else
 	char buffer[options.buffer_size];
+#endif
 
 	for (;;)
 	{
@@ -393,7 +444,13 @@ int use_tunnel(void)
 
 		memset(buffer, 0, sizeof(buffer));
 
+#ifdef __MINGW32__
+		int select_value = select(fd(), &io, NULL, NULL, NULL);
+
+		if (select_value == 0 || select_value >= WSABASEERR)
+#else
 		if (select(fd(), &io, NULL, NULL, NULL) < 0)
+#endif
 		{
 			perror("use_tunnel: select()");
 			break;
@@ -405,15 +462,25 @@ int use_tunnel(void)
 			if (count < 0)
 			{
 				perror("use_tunnel: recv(rc.client_socket)");
+#ifdef __MINGW32__
+				closesocket(rc.client_socket);
+				closesocket(rc.remote_socket);
+#else
 				close(rc.client_socket);
 				close(rc.remote_socket);
+#endif
 				return 1;
 			}
 
 			if (count == 0)
 			{
+#ifdef __MINGW32__
+				closesocket(rc.client_socket);
+				closesocket(rc.remote_socket);
+#else
 				close(rc.client_socket);
 				close(rc.remote_socket);
+#endif
 				return 0;
 			}
 
@@ -433,15 +500,25 @@ int use_tunnel(void)
 			if (count < 0)
 			{
 				perror("use_tunnel: recv(rc.remote_socket)");
+#ifdef __MINGW32__
+				closesocket(rc.client_socket);
+				closesocket(rc.remote_socket);
+#else
 				close(rc.client_socket);
 				close(rc.remote_socket);
+#endif
 				return 1;
 			}
 
 			if (count == 0)
 			{
+#ifdef __MINGW32__
+				closesocket(rc.client_socket);
+				closesocket(rc.remote_socket);
+#else
 				close(rc.client_socket);
 				close(rc.remote_socket);
+#endif
 				return 0;
 			}
 
@@ -460,12 +537,16 @@ int use_tunnel(void)
 
 int fd(void)
 {
+#ifndef __MINGW32__
 	unsigned int fd = rc.client_socket;
 	if (fd < rc.remote_socket)
 	{
 		fd = rc.remote_socket;
 	}
 	return fd + 1;
+#else
+	return 0;
+#endif
 }
 
 char *get_current_timestamp(void)
