@@ -20,6 +20,10 @@
 #include <sys/socket.h>
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define VERSION "0.8"
 
 #define LOCAL_PORT_OPTION     'a'
@@ -55,7 +59,7 @@ void print_usage(void);
 void print_version(void);
 void print_missing(const char *message);
 
-bool stay_alive();
+int stay_alive();
 
 struct struct_settings {
 	unsigned int local_port     : 1;
@@ -88,6 +92,10 @@ struct struct_rc {
 	struct sockaddr_in remote_addr;
 	struct hostent *remote_host;
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

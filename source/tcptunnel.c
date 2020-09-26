@@ -26,7 +26,7 @@ struct struct_rc rc;
 struct struct_options options;
 struct struct_settings settings = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-bool stay_alive()
+int stay_alive()
 {
     return (settings.stay_alive);
 }
