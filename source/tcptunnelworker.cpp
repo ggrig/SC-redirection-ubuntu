@@ -8,7 +8,7 @@ void TCPTunnelWorker::process() { // Process. Start processing data.
     set_option(REMOTE_PORT_OPTION, "23240");
     set_option(REMOTE_HOST_OPTION, "192.168.1.7");
     set_option(STAY_ALIVE_OPTION, "");
-    set_option(LOG_OPTION, "");
+    //set_option(LOG_OPTION, "");
 
     if (build_server() == 1)
     {

@@ -52,11 +52,11 @@ int build_tunnel(void);
 int use_tunnel(void);
 int fd(void);
 
-#ifdef __MINGW32__
-void set_option(char option, const char *optarg);
-#else
+#ifdef TCP_TUNNEL_STANDALONE
 void set_options(int argc, char *argv[]);
 void set_option(char **option, char *value);
+#else
+void set_option(char option, const char *optarg);
 #endif
 
 char *get_current_timestamp(void);
