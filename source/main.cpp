@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
 }
 
 #ifdef TCP_TUNNEL_STANDALONE
+// ./tcptunnel --local-port=3240 --remote-port=3240 --remote-host=192.168.1.7 --log --stay-alive
 int main(int argc, char *argv[])
 {
 #ifdef __MINGW32__

@@ -21,11 +21,13 @@ INCLUDEPATH = .
 
 SOURCES += main.cpp \
     scd_smartcardserver.cpp \
-    tcptunnel.cpp
+    tcptunnel.cpp \
+    tcptunnelworker.cpp
 
 HEADERS += \
     scd_smartcardserver.h \
-    tcptunnel.h
+    tcptunnel.h \
+    tcptunnelworker.h
 
 
 unix:!macx: LIBS += -lpcsclite

@@ -1,4 +1,8 @@
+#include <QThread>
+#include <QObject>
 #include "scd_smartcardserver.h"
+#include "tcptunnelworker.h"
+
 
 void saveToFile(QString qStr, QString qPath)
 {
@@ -35,6 +39,17 @@ SCD_SmartCardServer::SCD_SmartCardServer(qint16 port, ServerType type, QObject *
  */
 int SCD_SmartCardServer::start()
 {
+    QThread* thread = new QThread;
+    TCPTunnelWorker* worker = new TCPTunnelWorker();
+    worker->moveToThread(thread);
+    //QObject::connect(worker, SIGNAL (error(QString)), this, SLOT (errorString(QString)));
+    QObject::connect(thread, SIGNAL (started()), worker, SLOT (process()));
+    QObject::connect(worker, SIGNAL (finished()), thread, SLOT (quit()));
+    QObject::connect(worker, SIGNAL (finished()), worker, SLOT (deleteLater()));
+    QObject::connect(thread, SIGNAL (finished()), thread, SLOT (deleteLater()));
+    thread->start();
+
+
    cardServer = new QWebSocketServer("ATR",QWebSocketServer::NonSecureMode,NULL);
 
    connect(cardServer, SIGNAL(newConnection()), this, SLOT(onConnect()));
