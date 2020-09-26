@@ -7,7 +7,7 @@ class TCPTunnelWorker : public QObject
 {
     Q_OBJECT
 public:
-    TCPTunnelWorker();
+    TCPTunnelWorker(){}
     virtual ~TCPTunnelWorker(){}
 public slots:
     void process();

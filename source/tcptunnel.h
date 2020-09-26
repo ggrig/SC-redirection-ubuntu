@@ -1,6 +1,25 @@
 #ifndef TCPTUNNEL_H
 #define TCPTUNNEL_H
 
+#include <errno.h>
+#include <getopt.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
+
+#ifdef __MINGW32__
+#include <winsock2.h>
+#else
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#endif
+
 #define VERSION "0.8"
 
 #define LOCAL_PORT_OPTION     'a'
@@ -17,8 +36,6 @@
 
 #define PATH_SEPARATOR '/'
 
-const char *name;
-
 int build_server(void);
 int wait_for_clients(void);
 void handle_client(void);
@@ -27,8 +44,8 @@ int build_tunnel(void);
 int use_tunnel(void);
 int fd(void);
 
-void set_options(int argc, char *argv[]);
-void set_option(char **option, char *value);
+//void set_options(int argc, char *argv[]);
+void set_option(char option, const char *value);
 
 char *get_current_timestamp(void);
 

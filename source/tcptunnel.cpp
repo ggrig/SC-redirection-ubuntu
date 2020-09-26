@@ -18,31 +18,15 @@
  *
  */
 
-#include <errno.h>
-#include <getopt.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <time.h>
-#include <unistd.h>
-
-#ifdef __MINGW32__
-#include <winsock2.h>
-#else
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#endif
-
 #include "tcptunnel.h"
+
+const char *name;
 
 struct struct_rc rc;
 struct struct_options options;
 struct struct_settings settings = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+#if 0
 static struct option long_options[] = {
 	{ "local-port",    required_argument, NULL, LOCAL_PORT_OPTION },
 	{ "remote-host",   required_argument, NULL, REMOTE_HOST_OPTION },
@@ -59,6 +43,7 @@ static struct option long_options[] = {
 	{ "version",       no_argument,       NULL, VERSION_OPTION },
 	{ 0, 0, 0, 0 }
 };
+
 
 void set_options(int argc, char *argv[])
 {
@@ -173,6 +158,74 @@ void set_options(int argc, char *argv[])
 		print_missing("missing '--remote-host=' option.");
 		exit(1);
 	}
+}
+#endif
+
+void set_option(char opt, const char *optarg)
+{
+    switch (opt)
+    {
+        case LOCAL_PORT_OPTION:
+        {
+            options.local_port = optarg;
+            settings.local_port = 1;
+            break;
+        }
+
+        case REMOTE_PORT_OPTION:
+        {
+            options.remote_port = optarg;
+            settings.remote_port = 1;
+            break;
+        }
+
+        case REMOTE_HOST_OPTION:
+        {
+            options.remote_host = optarg;
+            settings.remote_host = 1;
+            break;
+        }
+
+        case BIND_ADDRESS_OPTION:
+        {
+            options.bind_address = optarg;
+            settings.bind_address = 1;
+            break;
+        }
+
+        case BUFFER_SIZE_OPTION:
+        {
+            options.buffer_size = atoi(optarg);
+            settings.buffer_size = 1;
+            break;
+        }
+
+        case CLIENT_ADDRESS_OPTION:
+        {
+            options.client_address = optarg;
+            settings.client_address = 1;
+            break;
+        }
+
+        case FORK_OPTION:
+        {
+            settings.fork = 1;
+            settings.stay_alive = 1;
+            break;
+        }
+
+        case LOG_OPTION:
+        {
+            settings.log = 1;
+            break;
+        }
+
+        case STAY_ALIVE_OPTION:
+        {
+            settings.stay_alive = 1;
+            break;
+        }
+    }
 }
 
 int build_server(void)
