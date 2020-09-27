@@ -26,6 +26,8 @@ struct struct_rc rc;
 struct struct_options options;
 struct struct_settings settings = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+SCD_SmartCardServer * pServer;
+
 int stay_alive()
 {
 	return settings.stay_alive;
@@ -669,8 +671,9 @@ void hexDump(const char * desc, const void * addr, const int len)
 	printf("  %s\n", buff);
 }
 
-int tcptunnel_loop()
+int tcptunnel_loop(SCD_SmartCardServer * p)
 {
+    pServer = p;
 #ifdef __MINGW32__
 	WSADATA info;
 	if (WSAStartup(MAKEWORD(1, 1), &info) != 0)

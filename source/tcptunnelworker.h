@@ -2,12 +2,14 @@
 #define TCPTUNNELWORKER_H
 
 #include <QObject>
+#include "scd_smartcardserver.h"
 
 class TCPTunnelWorker : public QObject
 {
     Q_OBJECT
+    SCD_SmartCardServer * pServer;
 public:
-    TCPTunnelWorker(){}
+    TCPTunnelWorker(SCD_SmartCardServer * p):pServer(p){}
     virtual ~TCPTunnelWorker(){}
 public slots:
     void process();

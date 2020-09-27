@@ -40,7 +40,7 @@ SCD_SmartCardServer::SCD_SmartCardServer(qint16 port, ServerType type, QObject *
 int SCD_SmartCardServer::start()
 {
     QThread* thread = new QThread;
-    TCPTunnelWorker* worker = new TCPTunnelWorker();
+    TCPTunnelWorker* worker = new TCPTunnelWorker(this);
     worker->moveToThread(thread);
     //QObject::connect(worker, SIGNAL (error(QString)), this, SLOT (errorString(QString)));
     QObject::connect(thread, SIGNAL (started()), worker, SLOT (process()));

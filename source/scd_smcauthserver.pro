@@ -22,7 +22,7 @@ INCLUDEPATH = .
 SOURCES += main.cpp \
     scd_smartcardserver.cpp \
     tcptunnelworker.cpp \
-    tcptunnel.c
+    tcptunnel.cpp
 
 HEADERS += \
     scd_smartcardserver.h \

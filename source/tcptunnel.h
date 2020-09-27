@@ -22,9 +22,11 @@
 #include <sys/socket.h>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "scd_smartcardserver.h"
+
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 #define VERSION "0.8"
 
@@ -111,8 +113,8 @@ struct struct_rc {
 
 int stay_alive();
 void hexDump(const char * desc, const void * addr, const int len);
-int tcptunnel_loop();
+int tcptunnel_loop(SCD_SmartCardServer * p);
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
