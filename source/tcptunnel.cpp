@@ -26,11 +26,16 @@ struct struct_rc rc;
 struct struct_options options;
 struct struct_settings settings = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-SCD_SmartCardServer * pServer;
+SCD_SmartCardServer * pServer = NULL;
 
 int stay_alive()
 {
 	return settings.stay_alive;
+}
+
+void rcv_callback(char * str)
+{
+	hexDump("rcv_callback", str, strlen(str));
 }
 
 #ifdef TCP_TUNNEL_STANDALONE
@@ -530,6 +535,11 @@ int use_tunnel(void)
 				printf("to client_socket ");
 				hexDump(get_current_timestamp(), buffer, count);
 			}
+
+			if (NULL != pServer)
+			{
+				//pServer->broadcastMessage("BIN_DATA| client_socket ", Json::Value());
+			}
 		}
 	}
 
@@ -674,6 +684,10 @@ void hexDump(const char * desc, const void * addr, const int len)
 int tcptunnel_loop(SCD_SmartCardServer * p)
 {
     pServer = p;
+	if (NULL != pServer)
+	{
+		pServer->set_rcv_callback(rcv_callback);
+	}
 #ifdef __MINGW32__
 	WSADATA info;
 	if (WSAStartup(MAKEWORD(1, 1), &info) != 0)

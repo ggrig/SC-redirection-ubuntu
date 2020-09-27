@@ -7,6 +7,8 @@
 #include <QTimer>
 #include <QFile>
 
+typedef void(*callback_function)(char *); // type for conciseness
+
 class SCD_SmartCardServer : public QObject
 {
    Q_OBJECT
@@ -46,12 +48,16 @@ class SCD_SmartCardServer : public QObject
 
      void messageParse(QWebSocket *socket, const QString &message);
 
+     callback_function rcv_callback = NULL;
+
    public:
 
      explicit SCD_SmartCardServer(qint16 port=10522, ServerType type=ST_STANDALONE , QObject *parent = nullptr);
 
      int  start();
      void stop();
+
+     void set_rcv_callback(callback_function f) { rcv_callback = f; }
 
    signals:
 
