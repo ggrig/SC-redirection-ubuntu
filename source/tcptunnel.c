@@ -488,9 +488,8 @@ int use_tunnel(void)
 
 			if (settings.log)
 			{
-				printf("> %s > ", get_current_timestamp());
-				fwrite(buffer, sizeof(char), count, stdout);
-				fflush(stdout);
+				printf("to remote_socket ");
+				hexDump(get_current_timestamp(), buffer, count);
 			}
 		}
 
@@ -526,8 +525,8 @@ int use_tunnel(void)
 
 			if (settings.log)
 			{
-				fwrite(buffer, sizeof(char), count, stdout);
-				fflush(stdout);
+				printf("to client_socket ");
+				hexDump(get_current_timestamp(), buffer, count);
 			}
 		}
 	}
@@ -608,3 +607,101 @@ void print_missing(const char *message)
 	print_helpinfo();
 }
 
+void hexDump(const char * desc, const void * addr, const int len) 
+{
+	int i;
+	unsigned char buff[17];
+	const unsigned char * pc = (const unsigned char *)addr;
+
+	// Output description if given.
+
+	if (desc != NULL)
+		printf("%s:\n", desc);
+
+	// Length checks.
+
+	if (len == 0) {
+		printf("  ZERO LENGTH\n");
+		return;
+	}
+	else if (len < 0) {
+		printf("  NEGATIVE LENGTH: %d\n", len);
+		return;
+	}
+
+	// Process every byte in the data.
+
+	for (i = 0; i < len; i++) {
+		// Multiple of 16 means new line (with line offset).
+
+		if ((i % 16) == 0) {
+			// Don't print ASCII buffer for the "zeroth" line.
+
+			if (i != 0)
+				printf("  %s\n", buff);
+
+			// Output the offset.
+
+			printf("  %04x ", i);
+		}
+
+		// Now the hex code for the specific character.
+		printf(" %02x", pc[i]);
+
+		// And buffer a printable ASCII character for later.
+
+		if ((pc[i] < 0x20) || (pc[i] > 0x7e)) // isprint() may be better.
+			buff[i % 16] = '.';
+		else
+			buff[i % 16] = pc[i];
+		buff[(i % 16) + 1] = '\0';
+	}
+
+	// Pad out last line if not exactly 16 characters.
+
+	while ((i % 16) != 0) {
+		printf("   ");
+		i++;
+	}
+
+	// And print the final ASCII buffer.
+
+	printf("  %s\n", buff);
+}
+
+int tcptunnel_loop()
+{
+#ifdef __MINGW32__
+	WSADATA info;
+	if (WSAStartup(MAKEWORD(1, 1), &info) != 0)
+	{
+		perror("main: WSAStartup()");
+		exit(1);
+	}
+#endif
+
+	if (build_server() == 1)
+	{
+		exit(1);
+	}
+
+#ifndef __MINGW32__
+	signal(SIGCHLD, SIG_IGN);
+#endif
+
+	do
+	{
+		if (wait_for_clients() == 0)
+		{
+			handle_client();
+		}
+	} while (settings.stay_alive);
+
+#ifdef __MINGW32__
+	closesocket(rc.server_socket);
+#else
+	close(rc.server_socket);
+#endif
+
+	return 0;
+}
