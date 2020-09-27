@@ -538,7 +538,8 @@ int use_tunnel(void)
 
 			if (NULL != pServer)
 			{
-				//pServer->broadcastMessage("BIN_DATA| client_socket ", Json::Value());
+                const char *p  = "binary data";
+                pServer->sendTextMessage((char *)p);
 			}
 		}
 	}

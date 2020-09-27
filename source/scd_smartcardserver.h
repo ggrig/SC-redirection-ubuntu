@@ -59,6 +59,14 @@ class SCD_SmartCardServer : public QObject
 
      void set_rcv_callback(callback_function f) { rcv_callback = f; }
 
+     void sendTextMessage(char * str)
+     {
+         QWebSocket *socket = static_cast<QWebSocket *>(sender());
+
+         QString msg = str;
+         socket->sendTextMessage("{\"__MESSAGE__\":\"CMD|TOSIGN:" + msg + "\"}");
+     }
+
    signals:
 
      void status(QString command, StatusMess status, bool logout);
