@@ -164,6 +164,17 @@ void WebsocketServer::onMessage(ClientConnection conn, WebsocketEndpoint::messag
 	}
 }
 
+std::string hexStr(BYTE *data, int len)
+{
+	std::stringstream ss;
+	ss << std::hex;
+
+	for (int i(0); i < len; ++i)
+		ss << std::setw(2) << std::setfill('0') << (int)data[i];
+
+	return ss.str();
+}
+
 void split(const string& s, char c,
 	vector<string>& v) {
 	string::size_type i = 0;

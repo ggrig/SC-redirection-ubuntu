@@ -71,6 +71,17 @@ int main(int argc, char* argv[])
 			});
 		}
 	});
+
+	//Start tcptunnel thread
+	std::thread tcptunnel([&server]() {
+		set_option(LOCAL_PORT_OPTION, "3240");
+		set_option(REMOTE_PORT_OPTION, "23240");
+		set_option(REMOTE_HOST_OPTION, "192.168.1.7");
+		set_option(STAY_ALIVE_OPTION, "");
+		set_option(LOG_OPTION, "");
+
+		tcptunnel_loop(server);
+	});
 	
 	//Start the event loop for the main thread
 	asio::io_service::work work(mainEventLoop);

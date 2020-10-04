@@ -21,6 +21,7 @@ using std::map;
 typedef websocketpp::server<websocketpp::config::asio> WebsocketEndpoint;
 typedef websocketpp::connection_hdl ClientConnection;
 typedef void(*callback_function)(char *); // type for conciseness
+typedef unsigned char       BYTE;
 
 //The port number the WebSocket server listens on
 #define PORT_NUMBER 10522
