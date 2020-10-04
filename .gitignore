@@ -2,3 +2,11 @@ bin/scd_smcauthserver
 build*/*
 source/scd_smcauthserver.pro.user
 source/*.autosave
+
+websocket-server-demo/server/CMakeCache.txt
+websocket-server-demo/server/CMakeFiles/
+websocket-server-demo/server/Makefile
+websocket-server-demo/server/cmake_install.cmake
+websocket-server-demo/server/libjsoncpp.a
+websocket-server-demo/server/server
+
