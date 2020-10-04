@@ -25,7 +25,7 @@ string WebsocketServer::stringifyJson(const Json::Value& val)
 	return Json::writeString(wbuilder, val);
 }
 
-WebsocketServer::WebsocketServer()
+WebsocketServer::WebsocketServer(int16_t port, ServerType type) : type(type), port(port)
 {
 	//Wire up our event handlers
 	this->endpoint.set_open_handler(std::bind(&WebsocketServer::onOpen, this, std::placeholders::_1));
@@ -36,7 +36,7 @@ WebsocketServer::WebsocketServer()
 	this->endpoint.init_asio(&(this->eventLoop));
 }
 
-void WebsocketServer::run(int port)
+void WebsocketServer::run()
 {
 	//Listen on the specified port number and start accepting connections
 	this->endpoint.listen(port);

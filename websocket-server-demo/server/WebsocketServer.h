@@ -27,13 +27,44 @@ typedef void(*callback_function)(char *); // type for conciseness
 
 class WebsocketServer
 {
+private:
+
+	enum ServerType { ST_UNKNOWN, ST_STANDALONE, ST_INTEGRATED };
+
+	enum StatusMess {
+		SM_UNKNOWNCOMMAND,
+		SM_UNKNOWN,
+		SM_ERROR
+	};
+
+	enum Commands { 
+		C_ATR,
+		C_VIEW_CERT,
+		C_AUTH,
+		C_SIGN
+	};
+
+	StatusMess  lastPollStatus = SM_UNKNOWN;
+
+	ServerType type;
+
+	string lastError;
+	string atr = "";
+
+	int16_t port;
+
+	int timer = 0;
+	int isAuthenticated = 0;
+
+	bool permanentConnection;
+
 
 	callback_function rcv_callback = NULL;
 
 	public:
 		
-		WebsocketServer();
-		void run(int port);
+		WebsocketServer(int16_t port = PORT_NUMBER, ServerType type = ST_STANDALONE);
+		void run();
 		
 		//Returns the number of currently connected clients
 		size_t numConnections();
