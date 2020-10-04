@@ -23,7 +23,7 @@ typedef websocketpp::connection_hdl ClientConnection;
 typedef void(*callback_function)(char *); // type for conciseness
 
 //The port number the WebSocket server listens on
-#define PORT_NUMBER 8080
+#define PORT_NUMBER 10522
 
 class WebsocketServer
 {
@@ -44,6 +44,10 @@ private:
 		C_SIGN
 	};
 
+	map<int, string> messages;
+	map<int, string> commands;
+	string lastCardError;
+
 	StatusMess  lastPollStatus = SM_UNKNOWN;
 
 	ServerType type;
@@ -58,6 +62,7 @@ private:
 
 	bool permanentConnection;
 
+	bool messageParse(ClientConnection conn, string message);
 
 	callback_function rcv_callback = NULL;
 

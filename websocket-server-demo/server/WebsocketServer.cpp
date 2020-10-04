@@ -4,6 +4,10 @@
 #include <functional>
 #include <iostream>
 
+#include <string>
+#include <fstream>
+#include <streambuf>
+
 //The name of the special JSON field that holds the message type for messages
 #define MESSAGE_FIELD "__MESSAGE__"
 
@@ -34,6 +38,15 @@ WebsocketServer::WebsocketServer(int16_t port, ServerType type) : type(type), po
 	
 	//Initialise the Asio library, using our own event loop object
 	this->endpoint.init_asio(&(this->eventLoop));
+
+	messages.insert(std::pair<int, std::string>(SM_UNKNOWNCOMMAND, "UnknownCommand"));
+	messages.insert(std::pair<int, std::string>(SM_UNKNOWN, "Unknown"));
+
+	commands.insert(std::pair<int, std::string>(C_ATR, "ATRCODE"));
+	commands.insert(std::pair<int, std::string>(C_VIEW_CERT, "VIEWCERT"));
+	commands.insert(std::pair<int, std::string>(C_AUTH, "AUTHENTICATE"));
+	commands.insert(std::pair<int, std::string>(C_SIGN, "TOSIGN"));
+
 }
 
 void WebsocketServer::run()
@@ -126,6 +139,11 @@ void WebsocketServer::onClose(ClientConnection conn)
 
 void WebsocketServer::onMessage(ClientConnection conn, WebsocketEndpoint::message_ptr msg)
 {
+	if (messageParse(conn, msg->get_payload()))
+	{
+		return;
+	}
+
 	//Validate that the incoming message contains valid JSON
 	Json::Value messageObject = WebsocketServer::parseJson(msg->get_payload());
 	if (messageObject.isNull() == false)
@@ -144,4 +162,88 @@ void WebsocketServer::onMessage(ClientConnection conn, WebsocketEndpoint::messag
 			}
 		}
 	}
+}
+
+void split(const string& s, char c,
+	vector<string>& v) {
+	string::size_type i = 0;
+	string::size_type j = s.find(c);
+
+	while (j != string::npos) {
+		v.push_back(s.substr(i, j - i));
+		i = ++j;
+		j = s.find(c, j);
+
+		if (j == string::npos)
+			v.push_back(s.substr(i, s.length()));
+	}
+}
+
+/**
+ * @brief WebsocketServer::messageParse
+ * @param conn
+ * @param message
+ */
+bool WebsocketServer::messageParse(ClientConnection conn, string message)
+{
+	string code;
+	int err;
+
+	// convert string to upper case
+	//std::for_each(message.begin(), message.end(), [](char & c) {
+	//	c = ::toupper(c);
+	//});
+
+	vector<string> msg;
+
+	split(message, ':', msg);
+
+	if (msg.size() != 2)
+	{
+		std::clog << messages.at(SM_UNKNOWNCOMMAND) << message << "\n";
+			return false;
+	}
+
+	if ((msg[1].size() > 2) &&
+		(msg[1].substr(msg[1].size() - 2).compare("\"}") == 0))
+	{
+		// remove tail chars "\"}"
+		msg[1] = msg[1].substr(0, msg[1].size() - 2);
+	}
+
+
+	std::clog << "Message Received: " << message << "\n";
+	std::clog << " Command: " << msg[0] << "\n";
+	std::clog << " Data: " << msg[1] << "\n";
+
+	if (NULL != rcv_callback)
+	{
+		const char *p = "WebsocketSever message";
+		rcv_callback((char*)p);
+	}
+
+	// Read the ATR code (for diagnostic use, or code detection)
+	if (msg[0] == commands.at(C_ATR))
+	{
+		return true;
+	}
+
+	if (msg[0] == commands.at(C_VIEW_CERT))
+	{
+		return true;
+	}
+
+	if (msg[0] == commands.at(C_AUTH))
+	{
+		return true;
+	}
+
+	if (msg[0] == commands.at(C_SIGN))
+	{
+		return true;
+	}
+
+	std::clog << messages.at(SM_UNKNOWNCOMMAND) << "\n";
+
+	return false;
 }
