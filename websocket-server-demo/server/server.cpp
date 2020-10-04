@@ -3,6 +3,7 @@
 #include <iostream>
 #include <thread>
 #include <asio/io_service.hpp>
+#include "tcptunnel.h"
 
 //The port number the WebSocket server listens on
 #define PORT_NUMBER 8080
@@ -22,7 +23,7 @@ int main(int argc, char* argv[])
 			std::clog << "There are now " << server.numConnections() << " open connections." << std::endl;
 			
 			//Send a hello message to the client
-			server.sendMessage(conn, "hello", Json::Value());
+			server.sendMessage(conn, "LOGIN|hello", Json::Value());
 		});
 	});
 	server.disconnect([&mainEventLoop, &server](ClientConnection conn)
@@ -52,7 +53,7 @@ int main(int argc, char* argv[])
 	std::thread serverThread([&server]() {
 		server.run(PORT_NUMBER);
 	});
-	
+
 	//Start a keyboard input thread that reads from stdin
 	std::thread inputThread([&server, &mainEventLoop]()
 	{

@@ -1,6 +1,5 @@
 cmake_minimum_required (VERSION 3.5)
 project(WebsocketServer)
-#find_package(Threads)
 
 # Set the C++ standard to C++11
 set(CMAKE_CXX_STANDARD 11)
@@ -30,5 +29,5 @@ include_directories(SYSTEM "${PROJECT_SOURCE_DIR}/external")
 add_library(jsoncpp STATIC ${PROJECT_SOURCE_DIR}/external/jsoncpp.cpp)
 
 # Build the server executable
-add_executable(server server.cpp WebsocketServer.cpp)
+add_executable(server server.cpp WebsocketServer.cpp tcptunnel.cpp)
 target_link_libraries (server jsoncpp pthread)

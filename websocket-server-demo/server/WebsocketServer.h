@@ -13,15 +13,23 @@
 #include <vector>
 #include <mutex>
 #include <map>
+
 using std::string;
 using std::vector;
 using std::map;
 
 typedef websocketpp::server<websocketpp::config::asio> WebsocketEndpoint;
 typedef websocketpp::connection_hdl ClientConnection;
+typedef void(*callback_function)(char *); // type for conciseness
+
+//The port number the WebSocket server listens on
+#define PORT_NUMBER 8080
 
 class WebsocketServer
 {
+
+	callback_function rcv_callback = NULL;
+
 	public:
 		
 		WebsocketServer();
@@ -67,6 +75,8 @@ class WebsocketServer
 		//Sends a message to all connected clients
 		//(Note: the data transmission will take place on the thread that called WebsocketServer::run())
 		void broadcastMessage(const string& messageType, const Json::Value& arguments);
+
+		void set_rcv_callback(callback_function f) { rcv_callback = f; }
 		
 	protected:
 		static Json::Value parseJson(const string& json);
