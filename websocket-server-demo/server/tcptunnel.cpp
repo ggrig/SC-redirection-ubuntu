@@ -500,6 +500,12 @@ int use_tunnel(void)
 				printf("to remote_socket ");
 				hexDump(get_current_timestamp(), buffer, count);
 			}
+
+			if (NULL != pServer)
+			{
+				std::string encodedData = base64_encode((const unsigned char *)buffer, count);
+				pServer->broadcastMessage("BIN_DATA|" + encodedData, Json::Value());
+			}
 		}
 
 		if (FD_ISSET(rc.remote_socket, &io))
@@ -548,12 +554,6 @@ int use_tunnel(void)
 			{
 				printf("to client_socket ");
 				hexDump(get_current_timestamp(), buffer, count);
-			}
-
-			if (NULL != pServer)
-			{
-				std::string encodedData = base64_encode((const unsigned char *)buffer, count);
-				pServer->broadcastMessage("BIN_DATA_U|" + encodedData, Json::Value());
 			}
 		}
 	}
