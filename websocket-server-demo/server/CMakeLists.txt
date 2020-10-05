@@ -29,5 +29,5 @@ include_directories(SYSTEM "${PROJECT_SOURCE_DIR}/external")
 add_library(jsoncpp STATIC ${PROJECT_SOURCE_DIR}/external/jsoncpp.cpp)
 
 # Build the server executable
-add_executable(server server.cpp WebsocketServer.cpp tcptunnel.cpp)
+add_executable(server server.cpp WebsocketServer.cpp tcptunnel.cpp utils.cpp base64.cpp)
 target_link_libraries (server jsoncpp pthread)

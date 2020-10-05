@@ -112,7 +112,6 @@ struct struct_rc {
 #endif
 
 int stay_alive();
-void hexDump(const char * desc, const void * addr, const int len);
 int tcptunnel_loop(WebsocketServer& server);
 
 //#ifdef __cplusplus
