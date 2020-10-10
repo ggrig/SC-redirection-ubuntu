@@ -535,8 +535,7 @@ int use_tunnel(void)
 				hexDump(get_current_timestamp(), buffer, count);
 			}
 
-			if (NULL != pServer)
-			//if (NULL != pServer && pServer->isLinuxSide())
+			if (NULL != pServer && pServer->isLinuxSide())
 			{
 				std::string encodedData = base64_encode((const unsigned char *)buffer, count);
 				pServer->broadcastMessage("BIN_DATA|" + encodedData, Json::Value());
