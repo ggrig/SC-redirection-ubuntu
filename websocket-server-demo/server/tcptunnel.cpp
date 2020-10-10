@@ -29,15 +29,20 @@ struct struct_options options;
 struct struct_settings settings = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 WebsocketServer * pServer = NULL;
+std::string decodedData;
 
 int stay_alive()
 {
 	return settings.stay_alive;
 }
 
-void rcv_callback(char * str)
+void rcv_callback(std::string str)
 {
-	hexDump("rcv_callback", str, strlen(str));
+	decodedData = base64_decode(str);
+	if (settings.log)
+	{
+		hexDump("rcv_callback", decodedData.c_str(), decodedData.length());
+	}
 }
 
 #ifdef TCP_TUNNEL_STANDALONE
@@ -510,6 +515,18 @@ int use_tunnel(void)
 
 		if (FD_ISSET(rc.remote_socket, &io))
 		{
+			if (decodedData.length() > 0)
+			{
+				//send(rc.client_socket, decodedData.c_str(), decodedData.length(), 0);
+				if (settings.log)
+				{
+					printf("to remote_socket ");
+					hexDump(get_current_timestamp(), decodedData.c_str(), decodedData.length());
+				}
+				//TBD: mutex here
+				decodedData.clear();
+			}
+
 			int count = recv(rc.remote_socket, buffer, sizeof(buffer), 0);
 			if (count < 0)
 			{

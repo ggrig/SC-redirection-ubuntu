@@ -20,7 +20,7 @@ using std::map;
 
 typedef websocketpp::server<websocketpp::config::asio> WebsocketEndpoint;
 typedef websocketpp::connection_hdl ClientConnection;
-typedef void(*callback_function)(char *); // type for conciseness
+typedef void(*callback_function)(std::string str); // type for conciseness
 typedef unsigned char       BYTE;
 
 //The port number the WebSocket server listens on
@@ -42,7 +42,8 @@ private:
 		C_ATR,
 		C_VIEW_CERT,
 		C_AUTH,
-		C_SIGN
+		C_SIGN,
+		C_BIN
 	};
 
 	map<int, string> messages;

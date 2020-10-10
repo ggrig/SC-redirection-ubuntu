@@ -46,6 +46,7 @@ WebsocketServer::WebsocketServer(int16_t port, ServerType type) : type(type), po
 	commands.insert(std::pair<int, std::string>(C_VIEW_CERT, "VIEWCERT"));
 	commands.insert(std::pair<int, std::string>(C_AUTH, "AUTHENTICATE"));
 	commands.insert(std::pair<int, std::string>(C_SIGN, "TOSIGN"));
+	commands.insert(std::pair<int, std::string>(C_BIN, "BIN_DATA"));
 
 }
 
@@ -227,10 +228,13 @@ bool WebsocketServer::messageParse(ClientConnection conn, string message)
 	std::clog << " Command: " << msg[0] << "\n";
 	std::clog << " Data: " << msg[1] << "\n";
 
-	if (NULL != rcv_callback)
+	if (msg[0] == commands.at(C_BIN))
 	{
-		const char *p = "WebsocketSever message";
-		rcv_callback((char*)p);
+		if (NULL != rcv_callback)
+		{
+			rcv_callback(msg[1]);
+		}
+		return true;
 	}
 
 	// Read the ATR code (for diagnostic use, or code detection)
