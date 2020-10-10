@@ -66,6 +66,7 @@ private:
 	bool messageParse(ClientConnection conn, string message);
 
 	callback_function rcv_callback = NULL;
+	callback_function send_callback = NULL;
 
 	public:
 		
@@ -117,6 +118,7 @@ private:
 		void broadcastMessage(const string& messageType, const Json::Value& arguments);
 
 		void set_rcv_callback(callback_function f) { rcv_callback = f; }
+		void set_send_callback(callback_function f) { send_callback = f; }
 		
 	protected:
 		static Json::Value parseJson(const string& json);

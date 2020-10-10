@@ -228,11 +228,20 @@ bool WebsocketServer::messageParse(ClientConnection conn, string message)
 	std::clog << " Command: " << msg[0] << "\n";
 	std::clog << " Data: " << msg[1] << "\n";
 
-	if (msg[0] == commands.at(C_BIN))
+	if (isWindowsSide() && msg[0] == commands.at(C_BIN))
 	{
 		if (NULL != rcv_callback)
 		{
 			rcv_callback(msg[1]);
+		}
+		return true;
+	}
+
+	if (isLinuxSide() && msg[0] == commands.at(C_BIN))
+	{
+		if (NULL != rcv_callback)
+		{
+			send_callback(msg[1]);
 		}
 		return true;
 	}

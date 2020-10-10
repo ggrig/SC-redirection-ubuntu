@@ -54,7 +54,7 @@ void send_callback(std::string str)
 	remote_socket_data.Push(decoded);
 	if (settings.log)
 	{
-		hexDump("rcv_callback", decoded.c_str(), decoded.length());
+		hexDump("send_callback", decoded.c_str(), decoded.length());
 	}
 }
 
@@ -683,6 +683,7 @@ int tcptunnel_loop(WebsocketServer& server)
 	if (NULL != pServer)
 	{
 		pServer->set_rcv_callback(rcv_callback);
+		pServer->set_send_callback(send_callback);
 	}
 #ifdef __MINGW32__
 	WSADATA info;
