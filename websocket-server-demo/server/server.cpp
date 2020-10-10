@@ -5,11 +5,14 @@
 #include <asio/io_service.hpp>
 #include "tcptunnel.h"
 
+//The port number the WebSocket server listens on
+#define PORT_NUMBER 10522
+
 int main(int argc, char* argv[])
 {
 	//Create the event loop for the main thread, and the WebSocket server
 	asio::io_service mainEventLoop;
-	WebsocketServer server;
+	WebsocketServer server(PORT_NUMBER, WebsocketServer::ServerType::ST_LINUX);
 	
 	//Register our network callbacks, ensuring the logic is run on the main thread's event loop
 	server.connect([&mainEventLoop, &server](ClientConnection conn)

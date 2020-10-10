@@ -23,14 +23,13 @@ typedef websocketpp::connection_hdl ClientConnection;
 typedef void(*callback_function)(std::string str); // type for conciseness
 typedef unsigned char       BYTE;
 
-//The port number the WebSocket server listens on
-#define PORT_NUMBER 10522
-
 class WebsocketServer
 {
-private:
+public:
 
-	enum ServerType { ST_UNKNOWN, ST_STANDALONE, ST_INTEGRATED };
+	enum ServerType { ST_UNKNOWN, ST_WINDOWS, ST_LINUX };
+
+private:
 
 	enum StatusMess {
 		SM_UNKNOWNCOMMAND,
@@ -70,8 +69,11 @@ private:
 
 	public:
 		
-		WebsocketServer(int16_t port = PORT_NUMBER, ServerType type = ST_STANDALONE);
+		WebsocketServer(int16_t port, ServerType type);
 		void run();
+
+		bool isWindowsSide() { return (ST_WINDOWS == type); }
+		bool isLinuxSide() { return (ST_LINUX == type); }
 		
 		//Returns the number of currently connected clients
 		size_t numConnections();
