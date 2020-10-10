@@ -542,7 +542,7 @@ int use_tunnel(void)
 			}
 		}
 
-		if (0) //if (pServer != NULL && pServer->isLinuxSide())
+		if (pServer != NULL && pServer->isLinuxSide())
 		{
 			if (remote_socket_data.GetSize() > 0)
 			{
