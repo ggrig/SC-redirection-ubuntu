@@ -484,7 +484,7 @@ int use_tunnel(void)
 		}
 
 
-		if (0) //if (pServer != NULL && pServer->isWindowsSide())
+		if (pServer != NULL && pServer->isWindowsSide())
 		{
 			if (client_socket_data.GetSize() > 0)
 			{
@@ -594,7 +594,7 @@ int use_tunnel(void)
 				hexDump(get_current_timestamp(), buffer, count);
 			}
 
-			if (0) //if (NULL != pServer && pServer->isWindowsSide())
+			if (NULL != pServer && pServer->isWindowsSide())
 			{
 				std::string encodedData = base64_encode((const unsigned char *)buffer, count);
 				pServer->broadcastMessage("BIN_DATA|" + encodedData, Json::Value());
