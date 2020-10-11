@@ -6,7 +6,7 @@
 #include "tcptunnel.h"
 
 //The port number the WebSocket server listens on
-#define PORT_NUMBER 10522
+#define PORT_NUMBER 8080
 
 int main(int argc, char* argv[])
 {

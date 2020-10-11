@@ -33,6 +33,9 @@ WebsocketServer * pServer = NULL;
 CTMultiThreadSingleQueue<std::string> client_socket_data;
 CTMultiThreadSingleQueue<std::string> remote_socket_data;
 
+#define IS_WINDOWS_SERVER (pServer != NULL && pServer->isWindowsSide())
+#define IS_LINUX_SERVER (pServer != NULL && pServer->isLinuxSide())
+
 int stay_alive()
 {
 	return settings.stay_alive;
@@ -484,7 +487,7 @@ int use_tunnel(void)
 		}
 
 
-		if (pServer != NULL && pServer->isWindowsSide())
+		if (IS_WINDOWS_SERVER)
 		{
 			if (client_socket_data.GetSize() > 0)
 			{
@@ -542,7 +545,7 @@ int use_tunnel(void)
 			}
 		}
 
-		if (pServer != NULL && pServer->isLinuxSide())
+		if (IS_LINUX_SERVER)
 		{
 			if (remote_socket_data.GetSize() > 0)
 			{
@@ -585,7 +588,7 @@ int use_tunnel(void)
 				return 0;
 			}
 
-			send(rc.client_socket, buffer, count, 0);
+			//send(rc.client_socket, buffer, count, 0);
 
 			if (settings.log)
 			{
