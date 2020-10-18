@@ -530,7 +530,7 @@ int use_tunnel(void)
 				return 0;
 			}
 
-			send(rc.remote_socket, buffer, count, 0);
+			//send(rc.remote_socket, buffer, count, 0);
 
 			if (settings.log)
 			{
